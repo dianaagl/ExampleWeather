@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Example</string>
+    <string name="weather_forecast_format"><![CDATA[https://api.weather.yandex.ru/v1/forecast?%slang=%s&l10n=true&limit=%d&hours=%b&colors=%b&extra=%b]]></string>
+    <string name="lat_lon_format_string"><![CDATA[lat=%d&lon=%d&]]></string>
+    <string name="geo_format_string"><![CDATA[geoid=%d&]]></string>
+</resources>
