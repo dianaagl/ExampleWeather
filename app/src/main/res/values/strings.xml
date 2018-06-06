@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Example</string>
-    <string name="weather_forecast_format"><![CDATA[https://api.weather.yandex.ru/v1/forecast?%slang=%s&l10n=true&limit=%d&hours=%b&colors=%b&extra=%b]]></string>
-    <string name="lat_lon_format_string"><![CDATA[lat=%d&lon=%d&]]></string>
+    <string name="weather_forecast_format"><![CDATA[http://api.openweathermap.org/data/2.5/weather?%s&APPID=%s]]></string>
+    <string name="lat_lon_format_string"><![CDATA[lat=%d&lon=%d]]></string>
     <string name="geo_format_string"><![CDATA[geoid=%d&]]></string>
+    <string name="api_key">d93f546d47b464aad88ca511f37e5297</string>
 </resources>

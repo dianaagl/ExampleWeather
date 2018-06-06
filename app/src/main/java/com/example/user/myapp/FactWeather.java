@@ -54,12 +54,22 @@ public class FactWeather {
             Число
             */
     private float cloudness;//	Облачность. Возможные значения:
+
+    public String getCondition() {
+        return condition;
+    }
+
     /*        0 — ясно.
-                0.25 — малооблачно.
-                0.5 — облачно с прояснениями.
-                0.75 — облачно с прояснениями.
-                1 — пасмурно.
-            Число
-            */
+                    0.25 — малооблачно.
+                    0.5 — облачно с прояснениями.
+                    0.75 — облачно с прояснениями.
+                    1 — пасмурно.
+
+                Число
+                */
     private String temp_color;//	Цвет для отображения значения температуры.	Строка
+
+    public FactWeather(String cloudness) {
+        this.condition = cloudness;
+    }
 }

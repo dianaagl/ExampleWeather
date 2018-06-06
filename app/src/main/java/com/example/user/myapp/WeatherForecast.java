@@ -5,31 +5,47 @@ import android.graphics.Color;
 public class WeatherForecast {
     private boolean isGeoId;
     private int geoid;
-    private int lat;
-    private int lon;
-    private String lang;
-    private int limit;
-    private boolean hours;
-    private boolean colors;
+    private double lat;
+    private double lon;
+    private String lang;//ru_RU
+    private int limit;//count of days for forecast
     private boolean extra;
+
+    public WeatherForecast(boolean isGeoId, int geoid, double lat, double lon, String lang, int limit,boolean extra) {
+        this.isGeoId = isGeoId;
+        this.geoid = geoid;
+        this.lat = lat;
+        this.lon = lon;
+        this.lang = lang;
+        this.limit = limit;
+        this.extra = extra;
+    }
+
+    public WeatherForecast(String lang, int limit,  boolean extra) {
+        this.lang = lang;
+        this.limit = limit;
+        this.extra = extra;
+    }
 
     public int getGeoid() {
         return geoid;
     }
 
     public void setGeoid(int geoid) {
+        this.isGeoId = true;
         this.geoid = geoid;
     }
 
-    public int getLat() {
-        return lat;
-    }
 
     public void setLat(int lat) {
         this.lat = lat;
     }
 
-    public int getLon() {
+    public double getLat() {
+        return lat;
+    }
+
+    public double getLon() {
         return lon;
     }
 
@@ -53,21 +69,7 @@ public class WeatherForecast {
         this.limit = limit;
     }
 
-    public boolean isHours() {
-        return hours;
-    }
 
-    public void setHours(boolean hours) {
-        this.hours = hours;
-    }
-
-    public boolean isColors() {
-        return colors;
-    }
-
-    public void setColors(boolean colors) {
-        this.colors = colors;
-    }
 
     public boolean isExtra() {
         return extra;
