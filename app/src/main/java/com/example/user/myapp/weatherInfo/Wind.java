@@ -1,6 +1,6 @@
 package com.example.user.myapp.weatherInfo;
 
-class Wind {//"wind":{"speed":6,"deg":320}
+public class Wind {//"wind":{"speed":6,"deg":320}
     private int speed;
     private int deg;
 

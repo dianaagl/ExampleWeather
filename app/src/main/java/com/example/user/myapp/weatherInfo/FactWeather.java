@@ -1,5 +1,8 @@
 package com.example.user.myapp.weatherInfo;
 
+import android.graphics.Bitmap;
+import android.util.Log;
+
 import com.example.user.myapp.weatherInfo.Clouds;
 import com.example.user.myapp.weatherInfo.Coord;
 import com.example.user.myapp.weatherInfo.Main;
@@ -14,6 +17,16 @@ import java.io.IOException;
 public class FactWeather {
     public FactWeather() {
         super();
+    }
+    private Bitmap bitmapICon;
+
+    public Bitmap getBitmapICon() {
+        return bitmapICon;
+    }
+
+    public void setBitmapICon(Bitmap bitmapICon) {
+
+        this.bitmapICon = bitmapICon;
     }
 
     public String base;
@@ -73,8 +86,10 @@ public class FactWeather {
     }
     public void setWeather(ObjectMapper objectMapper, JsonNode node) {
         try {
-            weather = objectMapper.readValue(node.get("weather").toString(), Weather.class);
+            Log.e("weather",node.get("weather").toString());
+            weather = objectMapper.readValue(node.get("weather").toString().replace("[","").replace("]",""), Weather.class);
         } catch (IOException e) {
+            Log.e(e.toString(),"");
             e.printStackTrace();
         }
     }

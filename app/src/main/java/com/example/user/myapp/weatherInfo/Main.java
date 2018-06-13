@@ -2,6 +2,15 @@ package com.example.user.myapp.weatherInfo;
 
 public class Main {
     private double temp;
+
+    public double getTemp() {
+        return temp;
+    }
+
+    public void setTemp(double temp) {
+        this.temp = temp;
+    }
+
     private int pressure;
     private int humidity;
     private double temp_min;

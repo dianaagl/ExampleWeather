@@ -5,24 +5,69 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.user.myapp.MainActivity">
+<LinearLayout
 
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+</LinearLayout>
+    <GridLayout
+
+        android:layout_margin="15dp"
+        android:columnCount="2"
+        android:orientation="horizontal"
+       android:layout_gravity="center"
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+
+            android:scaleType="fitXY"
+            android:id="@+id/icon"
+
+            android:layout_height="100dp"
+            android:layout_width="100dp" />
+        <TextView
+
+
+            android:id="@+id/temperatureTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+            android:text="17°C"
+            android:layout_margin="@dimen/margin"
+            />
     <TextView
-        android:id="@+id/temperatureTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-        android:text="17"
-        android:layout_margin="@dimen/margin"
-        />
-    <ImageView
-        android:src=""
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <Button
-        android:id="@+id/tempBut"
-        android:text="Показать температуру"
+        android:text="Влажность воздуха"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+     <TextView
+         android:id="@+id/humidity"
+         android:layout_width="wrap_content"
+         android:text="5" />
+     <TextView
 
+        android:text="Скорость ветра"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+     <TextView
+         android:id="@+id/wind_speed"
+        android:layout_width="wrap_content"
+        android:text="49" />
+     <TextView
+        android:text="Атмосферное давление"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+     <TextView
+         android:id="@+id/pressure"
+         android:layout_width="wrap_content"
+         android:text="49" />
+        <Button
+            android:id="@+id/tempBut"
+            android:text="Показать температуру"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </GridLayout>
 </LinearLayout>

@@ -1,20 +1,28 @@
 package com.example.user.myapp;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,50 +42,86 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import static com.example.user.myapp.LocationWeatherStorage.currentLocation;
+
 public class MainActivity extends AppCompatActivity {
 
-    static public String WEATHER_FORECAST_FORMAT;
-    static public String LAT_LON_FORMAT;
-    static public String GEO_FORMAT;
-    static public String KEY;
+    public static String WEATHER_FORECAST_FORMAT;
+    public static String LAT_LON_FORMAT;
+    public static String GEO_FORMAT;
+    public static String KEY;
     public static final int PERMISSION_REQUEST_CODE = 1;
-    private LocationManager locManager;// = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-    private Location currentLocation;
 
-    // Used to load the 'native-lib' library on application startup.
-    static {
-        System.loadLibrary("native-lib");
-    }
+   // = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+
+    private TextView tempTv;
+    private Button tempBut;
+    private ImageView weatherImageView;
+    private TextView humidityTextView;
+    private TextView pressureTextView;
+    private TextView windSpeedTextView;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // Example of a call to a native method
-        TextView mTempTv = (TextView) findViewById(R.id.temperatureTextView);
-        Button tempBut = (Button) findViewById(R.id.tempBut);
         WEATHER_FORECAST_FORMAT = getString(R.string.weather_forecast_format);
         LAT_LON_FORMAT = getString(R.string.lat_lon_format_string);
         GEO_FORMAT = getString(R.string.geo_format_string);
         KEY = getString(R.string.api_key);
 
+        tempTv = (TextView) findViewById(R.id.temperatureTextView);
+        tempBut = (Button) findViewById(R.id.tempBut);
+        weatherImageView = (ImageView)findViewById(R.id.icon);
+        humidityTextView = (TextView)findViewById(R.id.humidity);
+        pressureTextView = (TextView)findViewById(R.id.pressure);
+        windSpeedTextView = (TextView)findViewById(R.id.wind_speed);
+        getLocation();
+        LocationManager locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (!locManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            askToTurnOnGPS();
+        }
+
+
+
         tempBut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                        && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                   askForPermissions();
-               }
-               else {
-                   getLocation();
-                   WeatherForecast wf = new WeatherForecast(false, 0, currentLocation.getLatitude(), currentLocation.getLongitude(), "ru_RU", 3, false);
-                   TempAsyncTask weatherTask = new TempAsyncTask();
-                   weatherTask.execute(wf);
-               }
+
+                WeatherForecast wf = new WeatherForecast(false, 0, currentLocation.getLatitude(), currentLocation.getLongitude(), "ru_RU", 3, false);
+                TempAsyncTask weatherTask = new TempAsyncTask();
+                weatherTask.execute(wf);
             }
         });
     }
+
+    private void askToTurnOnGPS() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        //builder.setTitle("");
+        builder.setMessage(R.string.turn_on_GPS_string);
+        builder.setPositiveButton(getString(R.string.ok_message), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent activationGPSIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(activationGPSIntent);
+            }
+        });
+        builder.setNegativeButton("Cancell", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+
+
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -91,10 +135,12 @@ public class MainActivity extends AppCompatActivity {
 
                 if (permission.equals(Manifest.permission.ACCESS_FINE_LOCATION)) {
                     if (grantResult == PackageManager.PERMISSION_GRANTED) {
-                        getLocation();
-                        WeatherForecast wf = new WeatherForecast(false, 0, currentLocation.getLatitude(), currentLocation.getLongitude(), "ru_RU", 3, false);
-                        TempAsyncTask weatherTask = new TempAsyncTask();
-                        weatherTask.execute(wf);
+                        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                        }
+
+
+
                     } else {
                         ActivityCompat.requestPermissions(MainActivity.this,
                                 new String[]{
@@ -108,52 +154,6 @@ public class MainActivity extends AppCompatActivity {
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
-
-    private LocationListener locationListener = new LocationListener() {
-
-        @Override
-        public void onLocationChanged(Location location) {
-            Log.e("MainActivity", "onLocationChanged");
-            currentLocation = location;
-            Log.d("tag", String.valueOf(currentLocation.getLatitude()));
-
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-            Log.e("MainActivity", "onStatusChanged");
-
-            Log.d("tag", String.valueOf(currentLocation.getLatitude()));
-            Toast toast = Toast.makeText(getApplicationContext(),
-
-                    "onStatusChanged" , Toast.LENGTH_SHORT);
-            toast.show();
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-
-            Log.e("MainActivity", "onProviderEnabled");
-            Toast toast = Toast.makeText(getApplicationContext(),
-
-                    "onProviderEnabled", Toast.LENGTH_SHORT);
-            toast.show();
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-
-            Log.e("MainActivity","onProviderDisabled");
-            Toast toast = Toast.makeText(getApplicationContext(),
-
-                    "onProviderDisabled", Toast.LENGTH_SHORT);
-            toast.show();
-
-        }
-    };
 
     private void askForPermissions(){
 
@@ -171,28 +171,27 @@ public class MainActivity extends AppCompatActivity {
 
     }
     private void getLocation(){
-        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            locManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-            locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000 * 10, 10, locationListener);
-            locManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000 * 10, 10, locationListener);
-            currentLocation = locManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            currentLocation = locManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            Log.e("TAGLOCATION","LOCATION");
-
-
+        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                askForPermissions();
 
         }
-
-
+        Log.e("getLocation","Intent");
+        Intent intentMyIntentService = new Intent(this, GPSLocationListener.class);
+        startService(intentMyIntentService);
+                    //currentLocation = locationListener.getCurrentLocation();
     }
     class TempAsyncTask extends AsyncTask<WeatherForecast,Integer,FactWeather> {
         @Override
         protected void onPostExecute(FactWeather factWeather) {
-            Toast toast = Toast.makeText(MainActivity.this,
+            weatherImageView.setImageBitmap(factWeather.getBitmapICon());
 
-                    factWeather.toString(), Toast.LENGTH_LONG);
-            toast.show();
+            humidityTextView.setText(String.format(getString(R.string.humidity),factWeather.getMain().getHumidity()));
+            windSpeedTextView.setText(String.format(getString(R.string.wind_speed),factWeather.getWind().getSpeed()));
+            pressureTextView.setText(String.format(getString(R.string.pressure),factWeather.getMain().getPressure()));
+            double kelvinT = factWeather.getMain().getTemp();
+            int celsius = (int)(kelvinT - 273.15);
+            tempTv.setText(String.format(getString(R.string.temperature),celsius));
             super.onPostExecute(factWeather);
         }
 
@@ -268,9 +267,12 @@ public class MainActivity extends AppCompatActivity {
                 weather.setMain(objectMapper,node);
                 weather.setSys(objectMapper,node);
                 weather.setWind(objectMapper,node);
+                weather.setWeather(objectMapper,node);
              //   weather.setClouds(objectMapper,node);
+                Log.e("getFactWeather",weather.toString());
 
-
+                InputStream in = new URL(String.format(getString(R.string.icon_url),weather.getWeather().getIcon())).openStream();
+                weather.setBitmapICon(BitmapFactory.decodeStream(in));
 
             } catch (IOException e) {
                 e.printStackTrace();

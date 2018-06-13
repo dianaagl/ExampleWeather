@@ -4,4 +4,11 @@
     <string name="lat_lon_format_string"><![CDATA[lat=%d&lon=%d]]></string>
     <string name="geo_format_string"><![CDATA[geoid=%d&]]></string>
     <string name="api_key">d93f546d47b464aad88ca511f37e5297</string>
+    <string name="turn_on_GPS_string">Для дальнейшей работы приложения необходимо включить GPS!</string>
+    <string name="ok_message">Ok</string>
+    <string name="humidity"><![CDATA[%d %%]]></string>
+    <string name="wind_speed"><![CDATA[%d м/c]]></string>
+    <string name="pressure"><![CDATA[%d гПа]]></string>
+    <string name="temperature"><![CDATA[%d°C]]></string>
+    <string name="icon_url"><![CDATA[http://openweathermap.org/img/w/%s.png]]></string>
 </resources>
