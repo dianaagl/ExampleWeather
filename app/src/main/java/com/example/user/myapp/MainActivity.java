@@ -18,6 +18,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.user.myapp.weatherInfo.FactWeather;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.json.simple.JSONArray;
 
 import java.io.BufferedReader;
@@ -30,6 +35,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class MainActivity extends AppCompatActivity {
+
     static public String WEATHER_FORECAST_FORMAT;
     static public String LAT_LON_FORMAT;
     static public String GEO_FORMAT;
@@ -69,10 +75,8 @@ public class MainActivity extends AppCompatActivity {
                    TempAsyncTask weatherTask = new TempAsyncTask();
                    weatherTask.execute(wf);
                }
-
             }
         });
-
     }
 
     @Override
@@ -187,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(FactWeather factWeather) {
             Toast toast = Toast.makeText(MainActivity.this,
 
-                    factWeather.getCondition(), Toast.LENGTH_LONG);
+                    factWeather.toString(), Toast.LENGTH_LONG);
             toast.show();
             super.onPostExecute(factWeather);
         }
@@ -247,13 +251,33 @@ public class MainActivity extends AppCompatActivity {
                     urlConnection.disconnect();
                 }
             }
-            return new FactWeather(stringBuilder.toString());
+            return  getFactWeather(stringBuilder.toString());
 
         }
-        /*private FactWeather getFactWeather(BufferedReader reader){
+        private FactWeather getFactWeather(String jsonWeather){
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(
+                    DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            FactWeather weather = null;
+            try {
+               weather = new FactWeather();
+                JsonNode node = objectMapper.readTree(jsonWeather);
 
+                weather.setCoord(objectMapper,node);
+                weather.setClouds(objectMapper,node);
+                weather.setMain(objectMapper,node);
+                weather.setSys(objectMapper,node);
+                weather.setWind(objectMapper,node);
+             //   weather.setClouds(objectMapper,node);
+
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return weather;
         }
-        */
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
